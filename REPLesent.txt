@@ -28,13 +28,10 @@
 
 /\b-\s
 
-\**\s What OOP and FP have offered when it comes to modularity and
-  resusability.
+\**\s OOP and FP's approaches towards modularity and resusability.
 
-\**\s Some of the OOP and FP features that Scala offers to contribute
-  to that goal, with examples.
-
-\**\s Show few of Scala's attempts to unify OOP and FP.
+\**\s The way Scala manage to provide both OOP and FP features, but
+  still keeps everything in a consistent way (with examples).
 
 \**\s Why we \r💚 \s Scala.
 
@@ -56,13 +53,13 @@
 \**\s Programs are made out of \yobjects\s interacting with each other.
 
 ---
-\gOOP's take on modularity and reusability
+\gThe OOP approach to modularity and reusability
 
 /\b-\s
 
 --
-\**\s \yObjects\s encapsulate complex internal structures (\yopaque\s
-  \ydata types\s)
+\**\s \yObjects\s encapsulate complex structures and logic (\yopaque\s
+  \ydata types\s), thus promote modularity.
 
 --
 \**\s \yObjects\s interact with each other using \ymessage passing\s.
@@ -88,10 +85,10 @@
   pure functions.
 
 --
-\**\s Side effects are preferrably pushed as outmost as possible.
+\**\s Side effects are preferrably pushed as far out as possible.
 
 ---
-\gFP's take on modularity and reusability
+\gFP's approach towards modularity and reusability
 
 /\b-\s
 
@@ -104,8 +101,7 @@
   each other, making it easy to combine them together.
 
 --
-\**\s First class / higher order functions are super glue that
-  enables function composition.
+\**\s First class / higher order functions glue everything together.
 
 --
 \**\s Reusable in the concurrent settings.
@@ -142,8 +138,8 @@ lowerCaseCount("aBc")
 \**\s Pure functions acting on simple data types compose better.
 
 --
-\**\s Opaque data types encourages modularity, at the expense of
-  composibility, especially when mutable state is in the picture.
+\**\s Opaque data types encourages modularity, sometimes at the
+  expense of composibility, especially when mutable state is involved.
 
 --
 \**\s OOP shines in domains where problems can be naturally modelled as
@@ -347,7 +343,7 @@ all(3)
 
 \**\s What is pattern matching, really
 --
-  \*-\s deconposition of a data type
+  \*-\s decomposition of a data type
 --
   \*-\s applying partial functions
 
@@ -541,6 +537,22 @@ val (responseB, responseC, responseD) = (Some(6), Some(7), None)
 
 --
 ```
+val sumABC = if(
+  responseA.isDefined &&
+  responseB.isDefined &&
+  responseC.isDefined
+) {
+  Some(responseA.get + responseB.get + responseC.get)
+} else None
+```
+
+---
+\gProgramming against little boxes of things (cont.)
+
+/\b-\s
+
+--
+```
 val responseE = responseA.map(_ + 1)
 ```
 --
@@ -551,18 +563,7 @@ assert(responseE == responseF)
 
 --
 ```
-val sumABC = if(
-  responseA.isDefined &&
-  responseB.isDefined &&
-  responseC.isDefined
-) {
-  Some(responseA.get + responseB.get + responseC.get)
-} else None
-```
-
---
-```
-val sumABC = responseA.flatMap { a =>
+val sumABC2 = responseA.flatMap { a =>
    responseB.flatMap { b =>
       responseC.map { c =>
          a + b + c
@@ -573,7 +574,7 @@ val sumABC = responseA.flatMap { a =>
 
 --
 ```
-val sumABC2 = for {
+val sumABC3 = for {
   a <- responseA
   b <- responseB
   c <- responseC
