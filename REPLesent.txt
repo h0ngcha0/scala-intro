@@ -661,4 +661,6 @@ val futureSum = for {
 ---
 \g\*Thanks!\s
 
+Slides available @ \b\_https://github.com/liuhongchao/scala-intro\s\s
+
 Questions?
