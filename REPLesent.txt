@@ -96,7 +96,7 @@
 /\b-\s
 
 --
-\**\s \yPure functions\s over simple data types are building blocks of
+\**\s \yPure functions\s acting on simple data types are building blocks of
   the programs written in functional style.
 
 --
@@ -104,7 +104,7 @@
   each other, making it easy to combine them together.
 
 --
-\**\s First class / higher order functions are the super glues that
+\**\s First class / higher order functions are super glue that
   enables function composition.
 
 --
@@ -134,28 +134,28 @@ lowerCaseCount("aBc")
 ```
 
 ---
-\gCompare OOP and FP's attempts to modularity and reusability
+\gCompare OOP and FP's approaches to modularity and reusability
 
 /\b-\s
 
 --
-\**\s Pure functions over simple data types compose better.
+\**\s Pure functions acting on simple data types compose better.
 
 --
 \**\s Opaque data types encourages modularity, at the expense of
   composibility, especially when mutable state is in the picture.
 
 --
-\**\s OOP shines in domains where problems can be natually modelled as
+\**\s OOP shines in domains where problems can be naturally modelled as
   objects (w/o mutable states). e.g. GUI?, Actors (Erlang, Akka)
 
 --
-\**\s Still, (suprisingly) many problems can be solved by using simple
+\**\s Still, (surprisingly) many problems can be solved by using simple
   data types with functions.
 
 --
-\**\s Q: Do the cost of modeling every problem with objects really
-  makes up for the potential lost of composibility?
+\**\s Q: Does the gain of modeling every problem with objects really
+  make up for the potential loss of composibility?
 
 --
 \**\s Both should have a place in our toolbox, (\yScala\s \r😃 \s).
@@ -220,7 +220,7 @@ Stack.nickname
 ```
 trait Weapon {
   def action: String
-  def goodAt: String = "I am good at $action"
+  def goodAt: String = s"I am good at $action"
 }
 trait Gun extends Weapon { override def action: String = "shooting" }
 trait Knife extends Weapon { override def action: String = "stabbing" }
@@ -243,10 +243,10 @@ val heroWithKnifeAndGun = new Hero with Knife with Gun // mixin
 ```
 
 --
-\*\rtraits is the combination of interface and mixins\s\s
+\*\rtrait is the combination of interface and mixin\s\s
 
 ---
-\gFunction are objects
+\gFunctions are objects
 
 /\b-\s
 
@@ -270,7 +270,7 @@ assert(multiIB(2) == multiIC(2))
 ```
 
 ---
-\gThe \yapply\s method
+The \yapply\s method
 
 /\b-\s
 
@@ -287,7 +287,7 @@ assert(multi5(10) == 50)
 ```
 
 --
-\*\yapply\s method closes the gap between functions and objects.\s
+The \yapply\s method closes the gap between functions and objects.
 
 ---
 \gPartial functions
@@ -349,7 +349,7 @@ all(3)
 --
   \*-\s deconposition of a data type
 --
-  \*-\s apply partial functions
+  \*-\s applying partial functions
 
 --
 \**\s Why pattern matching is ubiquitous in FP, but not OOP
@@ -418,7 +418,7 @@ case class Country(capital: String, population: Double)
 
 --
 ```
-val sweden = Country("Gothenburg", 9.593)
+val sweden = Country("Göteborg", 9.593)
 ```
 
 --
@@ -444,10 +444,10 @@ Country.unapply(sweden)
   the combination of other types.
 
 --
-\**\s Case classes is one way to combine othe types (\yproduct types\s)
+\**\s Case classes is one way to combine other types (\yproduct types\s)
 
 --
-\**\s Case classes togther with traits can be used to define \ysum types\s.
+\**\s Case classes together with traits can be used to define \ysum types\s.
 
 ```
 sealed trait Tree
@@ -625,7 +625,7 @@ val futureSum = for {
 \**\s What if \yFuture\s contains \yOptions\s (\yOptionT\s)
 
 --
-\**\s More layers of boxes is somewhat similiar to complex objects in
+\**\s More layers of boxes is somewhat similar to complex objects in
   OOP, making the program hard to understand, modify and maintain.
 
 --
