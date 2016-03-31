@@ -1,0 +1,664 @@
+| \gIntroduction to Scala
+
+/\b🌉 \s
+
+| A Bridge Between
+
+| Object Oriented Programming and Functional Programming
+---
+| \gIdeology War?
+
+/\b😠 \s
+
+--
+\**\s We want \ymodularity\s and \yreusability\s
+
+--
+\**\s Ability to organize code into small modules and put them back
+  together in a different way (Unix philosophy \r💯 \s).
+
+--
+\**\s OOP and FP both provide a set of abstractions to achieve that.
+
+--
+\**\s No silver bullet (\b\_https://en.wikipedia.org/wiki/No_Silver_Bullet\s\s)
+
+---
+\gPlans for today
+
+/\b-\s
+
+\**\s What OOP and FP have offered when it comes to modularity and
+  resusability.
+
+\**\s Some of the OOP and FP features that Scala offers to contribute
+  to that goal, with examples.
+
+\**\s Show few of Scala's attempts to unify OOP and FP.
+
+\**\s Why we \r💚 \s Scala.
+
+---
+\gObject Oriented Programming
+
+/\b-\s
+
+--
+\**\s Based on the concept of \yobjects\s.
+
+--
+\**\s \yObjects\s usually contain data (\yattributes\s) and code (\ymethods\s).
+
+--
+\**\s \yMethods\s can get/set \yattributes\s within an \yobject\s.
+
+--
+\**\s Programs are made out of \yobjects\s interacting with each other.
+
+---
+\gOOP's take on modularity and reusability
+
+/\b-\s
+
+--
+\**\s \yObjects\s encapsulate complex internal structures (\yopaque\s
+  \ydata types\s)
+
+--
+\**\s \yObjects\s interact with each other using \ymessage passing\s.
+
+--
+\**\s Combine \yobjects\s with \yinheritance\s, \yobject composition\s,
+  \ydelegation\s
+
+---
+\gFunctional Programming
+
+/\b-\s
+
+--
+\**\s Emphasize on \ypure functions\s (\yreferential transparency\s)
+
+--
+\**\s Promote simple and \yimmutable\s data structures (primitive data
+  types and \yalgibraic data types\s)
+
+--
+\**\s Aim for writing large piece of side effects free code by composing
+  pure functions.
+
+--
+\**\s Side effects are preferrably pushed as outmost as possible.
+
+---
+\gFP's take on modularity and reusability
+
+/\b-\s
+
+--
+\**\s \yPure functions\s over simple data types are building blocks of
+  the programs written in functional style.
+
+--
+\**\s No side effects meaning that those blocks are independent of
+  each other, making it easy to combine them together.
+
+--
+\**\s First class / higher order functions are the super glues that
+  enables function composition.
+
+--
+\**\s Reusable in the concurrent settings.
+
+---
+\g A simple example of function composition:
+
+/\b-\s
+
+--
+```
+def lowerCase(s: String) = s.filter(c => c.isLower)
+```
+--
+```
+def count(s: String) = s.length
+```
+--
+```
+def lowerCaseCount = count _ compose lowerCase _
+```
+
+--
+```
+lowerCaseCount("aBc")
+```
+
+---
+\gCompare OOP and FP's attempts to modularity and reusability
+
+/\b-\s
+
+--
+\**\s Pure functions over simple data types compose better.
+
+--
+\**\s Opaque data types encourages modularity, at the expense of
+  composibility, especially when mutable state is in the picture.
+
+--
+\**\s OOP shines in domains where problems can be natually modelled as
+  objects (w/o mutable states). e.g. GUI?, Actors (Erlang, Akka)
+
+--
+\**\s Still, (suprisingly) many problems can be solved by using simple
+  data types with functions.
+
+--
+\**\s Q: Do the cost of modeling every problem with objects really
+  makes up for the potential lost of composibility?
+
+--
+\**\s Both should have a place in our toolbox, (\yScala\s \r😃 \s).
+
+---
+\gScala is a pure OO language (everything is an object)
+
+/\b-\s
+
+--
+
+```
+val b = true                     // no primitive types
+assert(b.toString == "true")
+```
+--
+
+```
+val i = if (b) 5 else 6          // everything is expression
+assert(i.toString == "5")
+```
+--
+
+```
+val j = List(1,2,3)
+assert(j.length == 3)
+```
+
+--
+```
+val date = new java.util.Date()  // java interop
+```
+
+---
+\gJava style classes
+
+/\b-\s
+
+```
+class Stack[T] {
+   var elems: List[T] = List()  // var means mutable
+   def push(x: T) { elems = x :: elems }
+   def top: T = elems.head
+   def pop() { elems = elems.tail }
+}
+
+val stack = new Stack[Int]
+
+object Stack {
+   def nickname = "LIFO"
+}
+
+Stack.nickname
+```
+
+---
+\gTraits
+
+/\b-\s
+
+--
+```
+trait Weapon {
+  def action: String
+  def goodAt: String = "I am good at $action"
+}
+trait Gun extends Weapon { override def action: String = "shooting" }
+trait Knife extends Weapon { override def action: String = "stabbing" }
+
+abstract class Hero extends Weapon {
+  def slogan: String = s"I keep the world safe by $action bad guys"
+}
+```
+
+--
+```
+class HeroWithGun extends Hero with Gun {}
+class HeroWithGunAndKnife extends Hero with Gun with Knife {} // diamond
+```
+
+--
+```
+val heroWithKnifeAndGun = new Hero with Knife with Gun // mixin
+
+```
+
+--
+\*\rtraits is the combination of interface and mixins\s\s
+
+---
+\gFunction are objects
+
+/\b-\s
+
+```
+def multiIA(x: Int) = i * x
+assert(multiIA(2) == 10)
+```
+
+--
+```
+val multiIB = (x: Int) => i * x
+assert(multiIA(2) == multiIB(2))
+```
+
+--
+```
+val multiIC = new Function1[Int, Int] {
+  def apply(x: Int): Int = i * x
+}
+assert(multiIB(2) == multiIC(2))
+```
+
+---
+\gThe \yapply\s method
+
+/\b-\s
+
+```
+class Multiply(y: Int) {
+   def apply(x: Int) = x * y
+}
+```
+
+--
+```
+val multi5 = new Multiply(5)
+assert(multi5(10) == 50)
+```
+
+--
+\*\yapply\s method closes the gap between functions and objects.\s
+
+---
+\gPartial functions
+
+/\b-\s
+
+```
+val one: PartialFunction[Int, String] = { case 1 => "one" }
+```
+
+--
+```
+val two: PartialFunction[Int, String] = { case 2 => "two" }
+```
+
+--
+```
+val rest: PartialFunction[Int, String] = {
+   case 3 => "three"
+   case _ => "rest..."
+}
+```
+
+--
+```
+val all: PartialFunction[Int, String] = one orElse two orElse rest
+```
+
+---
+\gPattern matching
+
+/\b-\s
+
+\*Pattern matching is sweet!\s
+
+--
+```
+3 match {
+  case 1 => "one"
+  case 2 => "two"
+  case 3 => "three"
+  case _ => "rest..."
+}
+```
+
+--
+\*and it is just the sugar for\s
+
+```
+all(3)
+```
+
+---
+\gPattern matching (cont.)
+
+/\b-\s
+
+\**\s What is pattern matching, really
+--
+  \*-\s deconposition of a data type
+--
+  \*-\s apply partial functions
+
+--
+\**\s Why pattern matching is ubiquitous in FP, but not OOP
+--
+  \*-\s FP focus on algebraic data types, decomposition is natural.
+--
+  \*-\s OOP focus on objects, no \ystandard\s way to decompose.
+
+---
+\gPattern matching (cont.)
+
+/\b-\s
+
+--
+```
+("hello", "world") match {
+   case (a, b) => s"$a, $b"
+}
+```
+
+--
+```
+val some5: Option[Int] = Some(5)
+val none: Option[Int] = None
+
+some5 match {
+   case Some(v) => s"value is $v"
+   case None    => "no value!"
+}
+```
+
+---
+\gPattern match on "regular object"
+
+/\b-\s
+
+--
+```
+class Person(val name: String, val gender: String, val title: String) {}
+val person = new Person("obama", "male", "president")
+```
+
+--
+```
+object Person {
+  def unapply(p: Person) = Some((p.name, p.title))
+}
+```
+
+--
+```
+person match {
+  case Person(name, title) => println(s"name: $name, title: $title")
+}
+```
+
+---
+\gCase classes (OO records)
+
+/\b-\s
+
+--
+```
+case class Country(capital: String, population: Double)
+```
+
+--
+```
+val sweden = Country("Gothenburg", 9.593)
+```
+
+--
+```
+sweden match {
+  case Country(capital, population) =>
+     println(s"capital: $capital :P, population: $population million")
+}
+```
+
+--
+```
+Country.unapply(sweden)
+```
+
+---
+\gAlgebraic data types
+
+/\b-\s
+
+--
+\**\s FP mostly work with algebraic data types, which is formed by
+  the combination of other types.
+
+--
+\**\s Case classes is one way to combine othe types (\yproduct types\s)
+
+--
+\**\s Case classes togther with traits can be used to define \ysum types\s.
+
+```
+sealed trait Tree
+case class Leaf(value: Int) extends Tree
+case class Node(left: Tree, right: Tree) extends Tree
+```
+
+--
+\**\s Algebraic data types \r💚 \s pattern matching
+
+```
+def sum(tree: Tree): Int = tree match {
+  case Node(left, right) => sum(left) + sum(right)
+  case Leaf(value) => value
+}
+```
+
+---
+\gCollection utilities
+
+/\b-\s
+
+--
+\**\s A list of basketball players
+
+```
+case class Player(name: String, team: String, ppg: Double)
+
+val players = List(
+  Player("Russel Westbrook", "Thunder",    23.7),
+  Player("Kevin Durant",     "Thunder",    28.0),
+  Player("Stephen Curry",    "Warriors",   30.0),
+  Player("Klay Thompson",    "Warriors",   22.7),
+  Player("Lebron James",     "Caveliers",  25.0),
+  Player("Kevin Love",       "Caveliers",  17.9),
+  Player("James Harden",     "Rockets",    28.6),
+  Player("Dwight Howard",    "Rockets",    14.0)
+)
+
+---
+\gCollection utilities (cont.)
+
+/\b-\s
+
+--
+```
+val superstars = players.filter(_.ppg > 20.0)
+```
+
+--
+```
+val firstNames = players.map(_.name.split(" ")(0))
+```
+
+--
+```
+val groupByTeam = players.groupBy(_.team)
+```
+
+--
+```
+def totalPoints(players: List[Player]) = players.foldLeft(0.0) {
+  (acc, player) => acc + player.ppg
+}
+```
+
+--
+```
+// Rank teams based on superstar power
+players
+  .filter(_.ppg > 20.0)
+  .groupBy(_.team)
+  .map { case (team, ps) => (team, totalPoints(ps)) }
+  .toList
+  .sortBy(_._2)
+```
+
+---
+\gProgramming against little boxes of things
+
+/\b-\s
+
+--
+```
+val responseA: Option[Int] = Some(5)
+```
+--
+```
+val (responseB, responseC, responseD) = (Some(6), Some(7), None)
+```
+
+--
+```
+val responseE = responseA.map(_ + 1)
+```
+--
+```
+val responseF = responseA.flatMap { x => Some(1+x) }
+assert(responseE == responseF)
+```
+
+--
+```
+val sumABC = if(
+  responseA.isDefined &&
+  responseB.isDefined &&
+  responseC.isDefined
+) {
+  Some(responseA.get + responseB.get + responseC.get)
+} else None
+```
+
+--
+```
+val sumABC = responseA.flatMap { a =>
+   responseB.flatMap { b =>
+      responseC.map { c =>
+         a + b + c
+      }
+   }
+}
+```
+
+--
+```
+val sumABC2 = for {
+  a <- responseA
+  b <- responseB
+  c <- responseC
+} yield a + b + c
+```
+
+---
+\gProgramming against little boxes of things (cont.)
+
+/\b-\s
+
+--
+```
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val future1 = Future { 1 }
+val future2 = Future { 2 }
+val future3 = Future { 3 }
+```
+
+--
+```
+val future4 = future1.map(_ + 1)
+```
+--
+```
+val future5 = future1.flatMap { x => Future {1+x} }
+```
+
+--
+```
+val futureSum = for {
+  v1 <- future1
+  v2 <- future2
+  v3 <- future3
+} yield v1 + v2 + v3
+```
+
+---
+\gMore boxes
+
+/\b-\s
+
+--
+\**\s Error handling, State, IO, etc.
+
+--
+\**\s What if \yFuture\s contains \yOptions\s (\yOptionT\s)
+
+--
+\**\s More layers of boxes is somewhat similiar to complex objects in
+  OOP, making the program hard to understand, modify and maintain.
+
+--
+\**\s FP and OOP can both lead to unmantainable code.
+
+
+---
+\gWrap up
+
+/\b-\s
+
+--
+\**\s We \r💚 \s Scala because:
+
+--
+  \*-\s It tries to implement one programming paradigm on top of
+    another, therefore provides a lot of insights about both paradigms.
+
+--
+  \*-\s More tools and especially more perspectives is helpful
+    to build better software.
+
+--
+  \*-\s Scala offers many ways of doing things and because the world
+    \*is\s a complex place, this is not always a bad thing.
+    (e.g. concurrency in Scala)
+
+
+--
+\**\s Many more to explore: \yimplicits\s, \ylazy evaluation\s, \ycall\s
+  \yby name\s, \ymacros\s, etc
+
+---
+\g\*Thanks!\s
+
+Questions?
